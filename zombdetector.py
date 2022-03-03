@@ -13,6 +13,7 @@ AllPics = os.listdir(path)
 Faces = []
 known_faces = []
 face_locations = []
+face_names = []
 process_currentframe = True
 
 print("LOADING IMAGES")
@@ -28,14 +29,13 @@ print("IMAGES HAVE LOADED")
 while True:
     ret, frame = video_capture.read()
 
-    small_frame = cv2.resize(frame, (0,0), fx=0.25, fy=0.25)
-
-    rgb_small_frame = small_frame[:, :, ::-1]
+    rgb_small_frame = frame[:, :, ::-1]
 
     if process_currentframe:
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
+        face_names=[]
         for face_encoding in face_encodings:
             match = face_recognition.compare_faces(known_faces, face_encodings)
             name = "Unknown"
@@ -44,18 +44,12 @@ while True:
             best_match_index = np.argmin(face_distances)
             if match[best_match_index]:
                 name = Faces[best_match_index]
-                print(name)
 
-            Faces.append(name)
+            face_names.append(name)
 
-        process_currentframe = not process_currentframe
+    process_currentframe = not process_currentframe
 
-        for (top, right, bottom, left), name in zip(face_locations, Faces):
-        # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-            top *= 4
-            right *= 4
-            bottom *= 4
-            left *= 4
+    for (top, right, bottom, left), name in zip(face_locations, face_names):
 
         # Draw a box around the face
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
