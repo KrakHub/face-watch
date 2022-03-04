@@ -1,4 +1,5 @@
-# import face_recognition
+from xml.etree.ElementTree import tostring
+import face_recognition
 import cv2
 import os
 import numpy as np
@@ -11,8 +12,6 @@ cred = credentials.Certificate("Programming\Projects\Zombies Among Us\Key.json")
 firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
 from firebase_admin import db
-
-
 
 video_capture = cv2.VideoCapture(0)
 
@@ -27,14 +26,27 @@ process_currentframe = True
 
 print("LOADING IMAGES")
 
-for v in AllPics:
-    imageFile = face_recognition.load_image_file("Programming\Projects\Zombies Among Us\zombie-library\\" + v)
-    Encoding = face_recognition.face_encodings(imageFile)[0]
-    known_faces.append(Encoding)
+ref = db.reference("/")
+data = ref.get()
+
+for name in data:
+    encoding = []
+    ref = db.reference("/" + name + "/Encoding")
+    code = ref.get()
+    for number in code:
+        encoding.append(number)
+    known_faces.append(np.array(encoding))
+    Faces.append(name)
+
+#for v in AllPics:
+    #imageFile = face_recognition.load_image_file("Programming\Projects\Zombies Among Us\zombie-library\\" + v)
+    #Encoding = face_recognition.face_encodings(imageFile)[0]
+    #known_faces.append(Encoding)
     # send data to firebase
-    ref = db.reference("/" + v.rsplit('.', 1)[0])
-    ref.set({"Encoding": Encoding})
-    Faces.append(v.rsplit('.', 1)[0])
+    #ref = db.reference("/" + v.rsplit('.', 1)[0])
+    #print(Encoding)
+    #ref.set({"Encoding": Encoding.tolist()})
+    #Faces.append(v.rsplit('.', 1)[0])
 
 print("IMAGES HAVE LOADED")
 
