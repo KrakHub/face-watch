@@ -2,8 +2,20 @@ import face_recognition
 import cv2
 import os
 import numpy as np
-
 from sqlalchemy import table
+
+import json
+
+import firebase_admin
+from firebase_admin import db
+from firebase_admin import credentials
+
+cred = credentials.Certificate("Programming\Projects\Zombies Among Us\Key.json")
+firebase_admin.initialize_app(cred)
+    
+encond = json.load(***REMOVED***["alex"]: 25***REMOVED***)
+ref = db.reference("/")
+ref.set(encond)
 
 video_capture = cv2.VideoCapture(0)
 
