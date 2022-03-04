@@ -1,18 +1,18 @@
-import face_recognition
+# import face_recognition
 import cv2
 import os
 import numpy as np
 from sqlalchemy import table
 
 import firebase_admin
-from firebase_admin import db
 from firebase_admin import credentials
 
 cred = credentials.Certificate("Programming\Projects\Zombies Among Us\Key.json")
-firebase_admin.initialize_app(cred)
-    
-ref = db.reference("server/saving-data/fireblog")
-ref.set({"alex": 25})
+firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
+
+from firebase_admin import db
+
+
 
 video_capture = cv2.VideoCapture(0)
 
@@ -31,6 +31,9 @@ for v in AllPics:
     imageFile = face_recognition.load_image_file("Programming\Projects\Zombies Among Us\zombie-library\\" + v)
     Encoding = face_recognition.face_encodings(imageFile)[0]
     known_faces.append(Encoding)
+    # send data to firebase
+    ref = db.reference("/" + v.rsplit('.', 1)[0])
+    ref.set({"Encoding": Encoding})
     Faces.append(v.rsplit('.', 1)[0])
 
 print("IMAGES HAVE LOADED")
