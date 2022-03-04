@@ -4,8 +4,6 @@ import os
 import numpy as np
 from sqlalchemy import table
 
-import json
-
 import firebase_admin
 from firebase_admin import db
 from firebase_admin import credentials
@@ -13,9 +11,8 @@ from firebase_admin import credentials
 cred = credentials.Certificate("Programming\Projects\Zombies Among Us\Key.json")
 firebase_admin.initialize_app(cred)
     
-encond = json.load({["alex"]: 25})
-ref = db.reference("/")
-ref.set(encond)
+ref = db.reference("server/saving-data/fireblog")
+ref.set({"alex": 25})
 
 video_capture = cv2.VideoCapture(0)
 
