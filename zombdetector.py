@@ -3,7 +3,10 @@ import face_recognition
 import cv2
 import os
 import numpy as np
+import tkinter as tkin
 from sqlalchemy import table
+
+from PIL import Image
 
 import firebase_admin
 from firebase_admin import credentials
@@ -22,7 +25,7 @@ Faces = [] #A constant, list of all of the face names
 known_faces = []
 face_locations = []
 face_names = [] #
-process_currentframe = True
+process_currentframe = 0
 
 print("LOADING IMAGES")
 
@@ -50,13 +53,16 @@ for name in data:
 
 print("IMAGES HAVE LOADED")
 
+opened = False
+
 while True:
     #Reads the current video capture, and sets it to RGB format
     ret, frame = video_capture.read()
 
     rgb_small_frame = frame[:, :, ::-1] 
-
-    if process_currentframe: #The codes only run if the frame is set to be read on
+    
+    if process_currentframe == 3: #The codes only run if the frame is set to be read on
+        process_currentframe = 0
         face_locations = face_recognition.face_locations(rgb_small_frame) 
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
@@ -69,13 +75,18 @@ while True:
             best_match_index = np.argmin(face_distances)
             if match[best_match_index]:
                 name = Faces[best_match_index]
-
+            
             face_names.append(name) #face_names will be the names of the faces currently detected
 
-    process_currentframe = not process_currentframe
+    process_currentframe += 1
 
     for (top, right, bottom, left), name in zip(face_locations, face_names):
-
+        if name == "Unknown":
+            ##window = tkin.Tk()
+            #label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
+            #label.pack()
+            cv2.imshow("Image", frame[top:left, bottom:right])
+            ##window.mainloop()
 
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
