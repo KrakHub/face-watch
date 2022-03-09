@@ -42,12 +42,13 @@ for name in data:
     known_faces.append(np.array(encoding))
     Faces.append(name)
 
-def EncodeFace(imageFile, input, Encoding):
-    known_faces.append(Encoding)
+def EncodeFace(input, Encoding):
     # send data to firebase
     ref = db.reference("/" + input)
-    print(Encoding)
+    print(input)
     ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+
+    known_faces.append(Encoding)
     Faces.append(input)
 
 print("IMAGES HAVE LOADED")
@@ -59,7 +60,8 @@ while True:
     ret, frame = video_capture.read()
 
     rgb_small_frame = frame[:, :, ::-1] 
-    
+    faces_found = []
+
     if process_currentframe >= 1: #The codes only run if the frame is set to be read on
         process_currentframe = 0
         face_locations = face_recognition.face_locations(rgb_small_frame) 
@@ -76,10 +78,11 @@ while True:
                 name = Faces[best_match_index]
             
             face_names.append(name) #face_names will be the names of the faces currently detected
+            faces_found.append(face_encoding)
 
     process_currentframe += 1
 
-    for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, known_faces):
+    for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, faces_found):
         if name == "Unknown":
             opened = True
             window = tkin.Tk()
@@ -89,10 +92,10 @@ while True:
             label2 = tkin.Canvas(window, width= 150, height=150)
             label2.pack()
             label2.create_image(20,20, anchor="nw", image=unknown_image)
-            nameEntry = tkin.Entry(fg="Yellow")
+            nameEntry = tkin.Entry()
             nameEntry.pack()
-            submitButton = tkin.Button(text="Submit")
-            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry.get(), face_encodings))
+            submitButton = tkin.Button(text="Submit", command=lambda:EncodeFace(nameEntry.get(), face_encodings))
+            submitButton.bind("SubmitButton", lambda event:EncodeFace(nameEntry.get(), face_encodings))
             submitButton.pack()
             #cv2.imshow("Image", frame[top:left, bottom:right])
             window.mainloop()
