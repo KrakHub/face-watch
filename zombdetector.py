@@ -31,7 +31,7 @@ process_currentframe = 0
 print("LOADING IMAGES")
 
 ref = db.reference("/")
-data = ref.get()
+data = ref.get() or []
 
 for name in data:
     encoding = []
@@ -45,10 +45,10 @@ for name in data:
 def EncodeFace(imageFile, input, Encoding):
     known_faces.append(Encoding)
     # send data to firebase
-    ref = db.reference("/" + input.get())
+    ref = db.reference("/" + input)
     print(Encoding)
     ref.set({"Encoding": Encoding.tolist()})
-    Faces.append(input.get())
+    Faces.append(input)
 
 print("IMAGES HAVE LOADED")
 
@@ -89,10 +89,10 @@ while True:
             label2 = tkin.Canvas(window, width= 150, height=150)
             label2.pack()
             label2.create_image(20,20, anchor="nw", image=unknown_image)
-            nameEntry = tkin.Entry()
+            nameEntry = tkin.Entry(fg="Yellow")
             nameEntry.pack()
             submitButton = tkin.Button(text="Submit")
-            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry, face_encodings))
+            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry.get(), face_encodings))
             submitButton.pack()
             #cv2.imshow("Image", frame[top:left, bottom:right])
             window.mainloop()
