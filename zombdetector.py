@@ -42,15 +42,13 @@ for name in data:
     known_faces.append(np.array(encoding))
     Faces.append(name)
 
-# def EncodeFace(img, input):
-#     imageFile = face_recognition.load_image_file(img)
-#     Encoding = face_recognition.face_encodings(imageFile)[0]
-#     known_faces.append(Encoding)
-#     # send data to firebase
-#     ref = db.reference("/" + input.get())
-#     print(Encoding)
-#     ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
-#     Faces.append(input.get())
+def EncodeFace(imageFile, input, Encoding):
+    known_faces.append(Encoding)
+    # send data to firebase
+    ref = db.reference("/" + input.get())
+    print(Encoding)
+    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+    Faces.append(input.get())
 
 print("IMAGES HAVE LOADED")
 
@@ -81,7 +79,7 @@ while True:
 
     process_currentframe += 1
 
-    for (top, right, bottom, left), name in zip(face_locations, face_names):
+    for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, known_faces):
         if name == "Unknown":
             opened = True
             window = tkin.Tk()
@@ -94,7 +92,7 @@ while True:
             nameEntry = tkin.Entry()
             nameEntry.pack()
             submitButton = tkin.Button(text="Submit")
-            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry))
+            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry, face_encodings))
             submitButton.pack()
             #cv2.imshow("Image", frame[top:left, bottom:right])
             window.mainloop()
