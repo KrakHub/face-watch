@@ -5,8 +5,9 @@ import os
 import numpy as np
 import tkinter as tkin
 from sqlalchemy import table
+import threading
 
-from PIL import Image
+from PIL import Image, ImageTk
 
 import firebase_admin
 from firebase_admin import credentials
@@ -41,15 +42,15 @@ for name in data:
     known_faces.append(np.array(encoding))
     Faces.append(name)
 
-#!for v in AllPics:
-    #!imageFile = face_recognition.load_image_file("Programming\Projects\Zombies Among Us\zombie-library\\" + v)
-    #!Encoding = face_recognition.face_encodings(imageFile)[0]
-    #!known_faces.append(Encoding)
-    #! send data to firebase
-    #!ref = db.reference("/" + v.rsplit('.', 1)[0])
-    #!print(Encoding)
-    #!ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
-    #!Faces.append(v.rsplit('.', 1)[0])
+# def EncodeFace(img, input):
+#     imageFile = face_recognition.load_image_file(img)
+#     Encoding = face_recognition.face_encodings(imageFile)[0]
+#     known_faces.append(Encoding)
+#     # send data to firebase
+#     ref = db.reference("/" + input.get())
+#     print(Encoding)
+#     ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+#     Faces.append(input.get())
 
 print("IMAGES HAVE LOADED")
 
@@ -61,7 +62,7 @@ while True:
 
     rgb_small_frame = frame[:, :, ::-1] 
     
-    if process_currentframe == 3: #The codes only run if the frame is set to be read on
+    if process_currentframe >= 1: #The codes only run if the frame is set to be read on
         process_currentframe = 0
         face_locations = face_recognition.face_locations(rgb_small_frame) 
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
@@ -82,11 +83,21 @@ while True:
 
     for (top, right, bottom, left), name in zip(face_locations, face_names):
         if name == "Unknown":
-            ##window = tkin.Tk()
-            #label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
-            #label.pack()
-            cv2.imshow("Image", frame[top:left, bottom:right])
-            ##window.mainloop()
+            opened = True
+            window = tkin.Tk()
+            label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
+            label.pack()
+            unknown_image =  ImageTk.PhotoImage(image=Image.fromarray(rgb_small_frame[top:bottom, left:right]))
+            label2 = tkin.Canvas(window, width= 150, height=150)
+            label2.pack()
+            label2.create_image(20,20, anchor="nw", image=unknown_image)
+            nameEntry = tkin.Entry()
+            nameEntry.pack()
+            submitButton = tkin.Button(text="Submit")
+            submitButton.bind("SubmitButton", EncodeFace(unknown_image, nameEntry))
+            submitButton.pack()
+            #cv2.imshow("Image", frame[top:left, bottom:right])
+            window.mainloop()
 
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
         cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
