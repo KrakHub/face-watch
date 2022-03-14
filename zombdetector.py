@@ -4,7 +4,7 @@ import cv2
 import os
 import numpy as np
 import tkinter as tkin
-from sqlalchemy import table
+from sqlalchemy import null, table
 import threading
 
 from PIL import Image, ImageTk
@@ -44,12 +44,15 @@ for name in data:
 
 def EncodeFace(input, Encoding):
     # send data to firebase
+    if input == "":
+        return
     ref = db.reference("/" + input)
     print(input)
     ref.set({"Encoding": Encoding.tolist()})
 
     known_faces.append(Encoding)
     Faces.append(input)
+    window.destroy()
 
 print("IMAGES HAVE LOADED")
 
