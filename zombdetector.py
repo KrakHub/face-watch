@@ -1,16 +1,17 @@
-from xml.etree.ElementTree import tostring
+#from xml.etree.ElementTree import tostring
 import face_recognition
 import cv2
-import os
+#import os
 import numpy as np
 import tkinter as tkin
-from sqlalchemy import null, table
+#from sqlalchemy import null, table
 import threading
 
 from PIL import Image, ImageTk
 
 import firebase_admin
 from firebase_admin import credentials
+from sqlalchemy import false
 
 cred = credentials.Certificate("Key.json")
 firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
@@ -26,6 +27,7 @@ Faces = [] #A constant, list of all of the face names
 known_faces = []
 face_locations = []
 face_names = [] #
+found_faces = []
 process_currentframe = 0
 
 print("LOADING IMAGES")
@@ -42,6 +44,19 @@ for name in data:
     known_faces.append(np.array(encoding))
     Faces.append(name)
 
+from gtts import gTTS
+import playsound
+
+def SayWords(Text):
+    def play():
+        playsound.playsound(Text+'ToSpeech.mp3')
+    
+    myobj = gTTS(text=Text, lang='en', slow=False)
+    myobj.save(Text+'ToSpeech.mp3')
+    x = threading.Thread(target=play)
+    x.start()
+
+
 def EncodeFace(input, Encoding):
     # send data to firebase
     if input == "":
@@ -52,7 +67,10 @@ def EncodeFace(input, Encoding):
 
     known_faces.append(Encoding)
     Faces.append(input)
+    SayWords("Welcome to the program, " + input + "!")
     window.destroy()
+
+
 
 print("IMAGES HAVE LOADED")
 
@@ -79,6 +97,18 @@ while True:
             best_match_index = np.argmin(face_distances)
             if match[best_match_index]:
                 name = Faces[best_match_index]
+
+                found = False
+
+                for names in found_faces:
+                    if names == name:
+                        found = True
+                        break
+                
+                if found == False:
+                    found_faces.append(name)
+                    SayWords("Goodmorning " + name + "!")
+
             
             face_names.append(name) #face_names will be the names of the faces currently detected
             faces_found.append(face_encoding)
