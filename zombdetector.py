@@ -1,7 +1,7 @@
 #from xml.etree.ElementTree import tostring
 import face_recognition
 import cv2
-#import os
+import os
 import numpy as np
 import tkinter as tkin
 #from sqlalchemy import null, table
@@ -49,10 +49,10 @@ import playsound
 
 def SayWords(Text):
     def play():
-        playsound.playsound(Text+'ToSpeech.mp3')
-    
+        playsound.playsound(Text+'.mp3')
+        os.remove(Text+'.mp3')
     myobj = gTTS(text=Text, lang='en', slow=False)
-    myobj.save(Text+'ToSpeech.mp3')
+    myobj.save(Text+'.mp3')
     x = threading.Thread(target=play)
     x.start()
 
