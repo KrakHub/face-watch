@@ -1,7 +1,0 @@
-dlib
-flask
-numpy
-opencv-python
-tk
-face_recognition
-firebase_admin
