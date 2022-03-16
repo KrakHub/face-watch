@@ -6,6 +6,9 @@ import numpy as np
 import tkinter as tkin
 #from sqlalchemy import null, table
 import threading
+import datetime
+import random
+
 
 from PIL import Image, ImageTk
 
@@ -20,14 +23,19 @@ from firebase_admin import db
 
 video_capture = cv2.VideoCapture(0)
 
-#path = "Programming\Projects\Zombies Among Us\zombie-library"
-#AllPics = os.listdir(path)
-
 Faces = [] #A constant, list of all of the face names
 known_faces = []
 face_locations = []
 face_names = [] #
 found_faces = []
+greetings = {
+    "morning": ["Good Morning", "How did you sleep", "Good to see you today"],
+    "evening": ["Good evening", "Hows your day going", "Nice to finally see you"],
+    "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
+}
+
+students = ["Antonio", "Alex", "Mr Sekol"]
+
 process_currentframe = 0
 
 print("LOADING IMAGES")
@@ -35,24 +43,28 @@ print("LOADING IMAGES")
 ref = db.reference("/")
 data = ref.get() or []
 
-for name in data:
-    encoding = []
-    ref = db.reference("/" + name + "/Encoding")
-    code = ref.get()
-    for number in code:
-        encoding.append(number)
-    known_faces.append(np.array(encoding))
-    Faces.append(name)
+def name_function():
+    for name in data:
+        encoding = []
+        ref = db.reference("/" + name + "/Encoding")
+        code = ref.get()
+        for number in code:
+            encoding.append(number)
+        known_faces.append(np.array(encoding))
+        Faces.append(name)
+name_function()
 
 from gtts import gTTS
 import playsound
 
 def SayWords(Text):
     def play():
-        playsound.playsound(Text+'.mp3')
-        os.remove(Text+'.mp3')
+        playsound.playsound(Text)
+        os.remove(Text)
+    
     myobj = gTTS(text=Text, lang='en', slow=False)
     myobj.save(Text+'.mp3')
+    Text = Text+'.mp3'
     x = threading.Thread(target=play)
     x.start()
 
@@ -70,7 +82,46 @@ def EncodeFace(input, Encoding):
     SayWords("Welcome to the program, " + input + "!")
     window.destroy()
 
+def Greet(name):
+    current = datetime.datetime.now()
 
+    morning = current.replace(hour=11, minute=0, second=0, microsecond=0)
+    evening = current.replace(hour=16, minute=0, second=0, microsecond=0)
+    night = current.replace(hour=23, minute=0, second=0, microsecond=0)
+    
+    time = "morning"
+
+    if current < morning:
+        time = "morning"
+    elif current < evening:
+        time = "evening"
+    elif current < night:
+        time = "night"
+    
+    options = greetings[time]
+    saying = options[random.randint(0,len(options)-1)]
+    SayWords(saying + name)
+
+import smtplib, ssl
+import requests
+import math
+
+port = 587  # For starttls
+smtp_server = "smtp.gmail.com"
+sender_email = "culp_alexander@student.mahoningctc.com"
+password = "800D0FAa1"
+
+def SendMessage(message):
+    receiver_email = "terziu_aiden@student.mahoningctc.com"
+
+    context = ssl.create_default_context()
+
+    with smtplib.SMTP(smtp_server, port) as server:
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message)
 
 print("IMAGES HAVE LOADED")
 
@@ -90,7 +141,7 @@ while True:
 
         face_names=[]
         for face_encoding in face_encodings:
-            match = face_recognition.compare_faces(known_faces, face_encoding)
+            match = face_recognition.compare_faces(known_faces, face_encoding,tolerance=0.6)
             name = "Unknown"
 
             face_distances = face_recognition.face_distance(known_faces, face_encoding)
@@ -107,7 +158,15 @@ while True:
                 
                 if found == False:
                     found_faces.append(name)
-                    SayWords("Goodmorning " + name + "!")
+                    Greet(name)
+
+                index = 0
+
+                for student in students:
+                    if (student == name) : 
+                        students.pop(index)
+                        break
+                    index += 1
 
             
             face_names.append(name) #face_names will be the names of the faces currently detected
@@ -146,16 +205,3 @@ while True:
 
 video_capture.release()
 cv2.destroyAllWindows()
-
-#! zomblib_detect = face_recognition.load_image_file("Programming\Projects\Zombies Among Us\detect\detect.jpg")
-#! zombencode_detect = face_recognition.face_encodings(zomblib_detect)[0]
-
-#! print("GETTING RESULTS")
-
-#! results = face_recognition.compare_faces(known_faces, zombencode_detect)
-#! index = 0
-
-#! for result in results:
-#!     if result == True:
-#!         print(Faces[index] + " was included in this picture!")
-#!     index += 1
