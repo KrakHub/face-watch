@@ -34,8 +34,6 @@ greetings = ***REMOVED***
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
 ***REMOVED***
 
-students = ["Antonio", "Alex", "Mr Sekol"]
-
 process_currentframe = 0
 
 print("LOADING IMAGES")
@@ -45,13 +43,17 @@ data = ref.get() or []
 
 def name_function():
     for name in data:
+        ref = db.reference("/" + name)
+        codes = ref.get()
         encoding = []
-        ref = db.reference("/" + name + "/Encoding")
-        code = ref.get()
-        for number in code:
-            encoding.append(number)
-        known_faces.append(np.array(encoding))
-        Faces.append(name)
+        for discriminator in codes:
+            print(discriminator)
+            ref = db.reference("/" + name + "/" + str(discriminator))
+            code = ref.get()
+            for number in code:
+                encoding.append(number)
+            known_faces.append(np.array(encoding))
+            Faces.append(name)
 name_function()
 
 from gtts import gTTS
@@ -73,9 +75,9 @@ def EncodeFace(input, Encoding):
     # send data to firebase
     if input == "":
         return
-    ref = db.reference("/" + input)
+    ref = db.reference("/" + input + "/")
     print(input)
-    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+    ref.set(***REMOVED***"Encoding1": Encoding.tolist()***REMOVED***)
 
     known_faces.append(Encoding)
     Faces.append(input)
@@ -102,27 +104,6 @@ def Greet(name):
     saying = options[random.randint(0,len(options)-1)]
     SayWords(saying + name)
 
-import smtplib, ssl
-import requests
-import math
-
-port = 587  # For starttls
-smtp_server = "smtp.gmail.com"
-sender_email = "culp_alexander@student.mahoningctc.com"
-password = "800D0FAa1"
-
-def SendMessage(message):
-    receiver_email = "terziu_aiden@student.mahoningctc.com"
-
-    context = ssl.create_default_context()
-
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()
-        server.starttls(context=context)
-        server.ehlo()
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, message)
-
 print("IMAGES HAVE LOADED")
 
 opened = False
@@ -141,7 +122,7 @@ while True:
 
         face_names=[]
         for face_encoding in face_encodings:
-            match = face_recognition.compare_faces(known_faces, face_encoding,tolerance=0.6)
+            match = face_recognition.compare_faces(known_faces, face_encoding,tolerance=0.4)
             name = "Unknown"
 
             face_distances = face_recognition.face_distance(known_faces, face_encoding)
@@ -160,15 +141,6 @@ while True:
                     found_faces.append(name)
                     Greet(name)
 
-                index = 0
-
-                for student in students:
-                    if (student == name) : 
-                        students.pop(index)
-                        break
-                    index += 1
-
-            
             face_names.append(name) #face_names will be the names of the faces currently detected
             faces_found.append(face_encoding)
 
