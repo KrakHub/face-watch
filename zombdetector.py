@@ -45,8 +45,9 @@ def name_function():
     for name in data:
         ref = db.reference("/" + name)
         codes = ref.get()
-        encoding = []
+        
         for discriminator in codes:
+            encoding = []
             print(discriminator)
             ref = db.reference("/" + name + "/" + str(discriminator))
             code = ref.get()
@@ -77,7 +78,7 @@ def EncodeFace(input, Encoding):
         return
     ref = db.reference("/" + input + "/")
     print(input)
-    ref.set(***REMOVED***"Encoding1": Encoding.tolist()***REMOVED***)
+    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
 
     known_faces.append(Encoding)
     Faces.append(input)
@@ -122,9 +123,9 @@ while True:
 
         face_names=[]
         for face_encoding in face_encodings:
-            match = face_recognition.compare_faces(known_faces, face_encoding,tolerance=0.4)
+            match = face_recognition.compare_faces(known_faces, face_encoding, tolerance=0.35)
             name = "Unknown"
-
+            print("Encoding: 0.35")
             face_distances = face_recognition.face_distance(known_faces, face_encoding)
             best_match_index = np.argmin(face_distances)
             if match[best_match_index]:
@@ -140,6 +141,39 @@ while True:
                 if found == False:
                     found_faces.append(name)
                     Greet(name)
+
+                ref = db.reference("/" + name)
+                data = ref.get()
+                getDiscriminator = str(len(data)+1)
+                if getDiscriminator <= str(8):
+                    data["Encoding" + getDiscriminator] = face_encoding.tolist()
+                    ref.set(data)
+            else:
+                match = face_recognition.compare_faces(known_faces, face_encoding, tolerance=0.55)
+                print("Encoding: 0.6")
+                name = "Unknown"
+                face_distances = face_recognition.face_distance(known_faces, face_encoding)
+                best_match_index = np.argmin(face_distances)
+                if match[best_match_index]:
+                    name = Faces[best_match_index]
+
+                    found = False
+
+                    for names in found_faces:
+                        if names == name:
+                            found = True
+                            break
+                    
+                    if found == False:
+                        found_faces.append(name)
+                        Greet(name)
+
+                    ref = db.reference("/" + name)
+                    data = ref.get()
+                    getDiscriminator = str(len(data)+1)
+                    if getDiscriminator <= str(8):
+                        data["Encoding" + getDiscriminator] = face_encoding.tolist()
+                        ref.set(data)
 
             face_names.append(name) #face_names will be the names of the faces currently detected
             faces_found.append(face_encoding)
