@@ -156,15 +156,15 @@ while True:
 
     if process_currentframe >= 1: #The codes only run if the frame is set to be read on
         process_currentframe = 0
-        face_locations = face_recognition.face_locations(rgb_small_frame) 
-        face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+        face_locations = face_recognition.api.face_locations(rgb_small_frame) 
+        face_encodings = face_recognition.api.face_encodings(rgb_small_frame, face_locations)
 
         face_names=[]
         for face_encoding in face_encodings:
-            match = face_recognition.compare_faces(known_faces, face_encoding, tolerance=0.35)
+            match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=0.35)
             name = "Unknown"
             print("Encoding: 0.35")
-            face_distances = face_recognition.face_distance(known_faces, face_encoding)
+            face_distances = face_recognition.api.face_distance(known_faces, face_encoding)
             best_match_index = np.argmin(face_distances)
             if match[best_match_index]:
                 name = Faces[best_match_index]
@@ -195,10 +195,10 @@ while True:
                     data["Encoding" + getDiscriminator] = face_encoding.tolist()
                     ref.set(data)
             else:
-                match = face_recognition.compare_faces(known_faces, face_encoding, tolerance=0.55)
+                match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=0.55)
                 print("Encoding: 0.6")
                 name = "Unknown"
-                face_distances = face_recognition.face_distance(known_faces, face_encoding)
+                face_distances = face_recognition.api.face_distance(known_faces, face_encoding)
                 best_match_index = np.argmin(face_distances)
                 if match[best_match_index]:
                     name = Faces[best_match_index]
@@ -244,8 +244,7 @@ while True:
             #cv2.imshow("Image", frame[top:left, bottom:right])
             window.mainloop()
 
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
