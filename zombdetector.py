@@ -34,7 +34,7 @@ greetings = ***REMOVED***
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
 ***REMOVED***
 
-baseStudents = ["Antonio", "Alex", "Mr Sekol"]
+baseStudents = ["Cottage Cheese", "Alex", "Mr Sekol"]
 students = []
 
 process_currentframe = 0
@@ -179,6 +179,14 @@ while True:
                     found_faces.append(name)
                     Greet(name)
 
+                index = 0
+
+                for student in students:
+                    if (student == name) : 
+                        students.pop(index)
+                        break
+                    index += 1
+
                 ref = db.reference("/" + name)
                 data = ref.get()
                 getDiscriminator = str(len(data)+1)
@@ -243,6 +251,7 @@ while True:
     cv2.imshow('Video', frame) #Displays the video
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        takeAttendence()
         break
 
 
