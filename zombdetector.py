@@ -105,6 +105,40 @@ def Greet(name):
     saying = options[random.randint(0,len(options)-1)]
     SayWords(saying + name)
 
+def takeAttendence():
+    def listToString(s): 
+        str1 = "" 
+
+        for ele in s: 
+            if len(str1) == 0:
+                str1 += ele  
+            else:
+                str1 += ", " + ele  
+            
+        
+        return str1 
+
+    SendMessage(listToString(students))
+
+import smtplib, ssl
+
+port = 587  # For starttls
+smtp_server = "smtp.gmail.com"
+sender_email = "culp_alexander@student.mahoningctc.com"
+receiver_email = "cotto_antonio@student.mahoningctc.com"
+password = "800D0FAa1"
+
+def SendMessage(message):
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    s.login(sender_email, password)
+    SUBJECT = "Attendence"   
+    TEXT = message
+    message = 'Subject: {}\n\n{}'.format(SUBJECT, TEXT)
+
+    s.sendmail(sender_email, receiver_email, message)
+    s.quit()
+
 print("IMAGES HAVE LOADED")
 
 opened = False
