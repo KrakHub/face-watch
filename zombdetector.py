@@ -34,6 +34,9 @@ greetings = {
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
 }
 
+baseStudents = ["Antonio", "Alex", "Mr Sekol"]
+students = []
+
 process_currentframe = 0
 
 print("LOADING IMAGES")
