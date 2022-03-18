@@ -60,17 +60,18 @@ def name_function():
             Faces.append(name)
 name_function()
 
-from gtts import gTTS
-import playsound
+import pyttsx3
+
+converter = pyttsx3.init()
 
 def SayWords(Text):
     def play():
-        playsound.playsound(Text)
-        os.remove(Text)
+        converter.setProperty('rate', 200)
+        converter.setProperty('volume', 1)
+
+        converter.say(Text)
+        converter.runAndWait()
     
-    myobj = gTTS(text=Text, lang='en', slow=False)
-    myobj.save(Text+'.mp3')
-    Text = Text+'.mp3'
     x = threading.Thread(target=play)
     x.start()
 
@@ -250,8 +251,13 @@ while True:
 
     cv2.imshow('Video', frame) #Displays the video
 
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 0 and datetime.datetime.now().second == 0:
+        students = baseStudents
+
+    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 20 and datetime.datetime.now().second == 0:
         takeAttendence()
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
 
