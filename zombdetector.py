@@ -34,7 +34,7 @@ greetings = ***REMOVED***
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
 ***REMOVED***
 
-baseStudents = ["Cottage Cheese", "Alex", "Mr Sekol"]
+baseStudents = ["Antonio", "Alex", "Mr Sekol"]
 students = []
 
 process_currentframe = 0
@@ -251,15 +251,16 @@ while True:
 
     cv2.imshow('Video', frame) #Displays the video
 
-    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 0 and datetime.datetime.now().second == 0:
+    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 24 and datetime.datetime.now().second == 0 or (cv2.waitKey(1) & 0xFF == ord('s')):
+        print('Starting Attendance')
         students = baseStudents
 
-    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 20 and datetime.datetime.now().second == 0:
+    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 25 and datetime.datetime.now().second == 0 or (cv2.waitKey(1) & 0xFF == ord('e')):
+        print('End Attendance')
         takeAttendence()
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
 
 video_capture.release()
 cv2.destroyAllWindows()

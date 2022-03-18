@@ -20,6 +20,8 @@ print("LOADING IMAGES")
 
 ref = db.reference("/")
 
+ref.set("")
+
 for v in AllPics:
     imageFile = face_recognition.load_image_file("Upload\\" + v)
     Encoding = face_recognition.face_encodings(imageFile)[0]
