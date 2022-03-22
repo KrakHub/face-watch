@@ -4,6 +4,8 @@ import cv2
 import os
 import numpy as np
 from sqlalchemy import table
+import dlib
+dlib.DLIB_USE_CUDA
 
 import firebase_admin
 from firebase_admin import credentials
