@@ -1,15 +1,11 @@
-#from xml.etree.ElementTree import tostring
 import face_recognition
 import cv2
 import os
 import numpy as np
 import tkinter as tkin
-#from sqlalchemy import null, table
 import threading
 import datetime
 import random
-from gfd.py.video.capture import VideoCaptureThreading
-
 
 from PIL import Image, ImageTk
 
@@ -144,6 +140,34 @@ def SendMessage(message):
     s.sendmail(sender_email, receiver_email, message)
     s.quit()
 
+def CompareFaces(tol):
+    match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=tol)
+    name = "Unknown"
+    print("Encoding: " + str(tol))
+    face_distances = face_recognition.api.face_distance(known_faces, face_encoding)
+    best_match_index = np.argmin(face_distances)
+    if match[best_match_index]:
+        name = Faces[best_match_index]
+        
+        foundInSession = False
+
+        for names in found_faces:
+            if names == name:
+                foundInSession = True
+                break
+        
+        if foundInSession == False:
+            found_faces.append(name)
+            Greet(name)
+
+        ref = db.reference("/" + name)
+        data = ref.get()
+        getDiscriminator = str(len(data)+1)
+        if getDiscriminator <= str(8):
+            data["Encoding" + getDiscriminator] = face_encoding.tolist()
+            ref.set(data)
+    return name
+
 print("IMAGES HAVE LOADED")
 
 opened = False
@@ -152,7 +176,7 @@ while True:
     #Reads the current video capture, and sets it to RGB format
     ret, frame = video_capture.read()
 
-    rgb_small_frame = cv2.resize(frame[:, :, ::-1], (0,0), fx=0.25, fy=0.25) 
+    rgb_small_frame = frame[:, :, ::-1] 
     faces_found = []
 
     if process_currentframe >= 1: #The codes only run if the frame is set to be read on
@@ -162,66 +186,11 @@ while True:
 
         face_names=[]
         for face_encoding in face_encodings:
-            match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=0.35)
-            name = "Unknown"
-            print("Encoding: 0.35")
-            face_distances = face_recognition.api.face_distance(known_faces, face_encoding)
-            best_match_index = np.argmin(face_distances)
-            if match[best_match_index]:
-                name = Faces[best_match_index]
-
-                found = False
-
-                for names in found_faces:
-                    if names == name:
-                        found = True
-                        break
-                
-                if found == False:
-                    found_faces.append(name)
-                    Greet(name)
-
-                index = 0
-
-                for student in students:
-                    if (student == name) : 
-                        students.pop(index)
-                        break
-                    index += 1
-
-                ref = db.reference("/" + name)
-                data = ref.get()
-                getDiscriminator = str(len(data)+1)
-                if getDiscriminator <= str(8):
-                    data["Encoding" + getDiscriminator] = face_encoding.tolist()
-                    ref.set(data)
-            else:
-                match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=0.55)
-                print("Encoding: 0.6")
-                name = "Unknown"
-                face_distances = face_recognition.api.face_distance(known_faces, face_encoding)
-                best_match_index = np.argmin(face_distances)
-                if match[best_match_index]:
-                    name = Faces[best_match_index]
-
-                    found = False
-
-                    for names in found_faces:
-                        if names == name:
-                            found = True
-                            break
-                    
-                    if found == False:
-                        found_faces.append(name)
-                        Greet(name)
-
-                    ref = db.reference("/" + name)
-                    data = ref.get()
-                    getDiscriminator = str(len(data)+1)
-                    if getDiscriminator <= str(8):
-                        data["Encoding" + getDiscriminator] = face_encoding.tolist()
-                        ref.set(data)
-
+            name = CompareFaces(0.35)
+            print(name)
+            if name == "Unknown":
+                name = CompareFaces(0.55)
+                print(name)
             face_names.append(name) #face_names will be the names of the faces currently detected
             faces_found.append(face_encoding)
 
@@ -242,7 +211,6 @@ while True:
             submitButton = tkin.Button(text="Submit", command=lambda:EncodeFace(nameEntry.get(), face_encodings))
             submitButton.bind("SubmitButton", lambda event:EncodeFace(nameEntry.get(), face_encodings))
             submitButton.pack()
-            #cv2.imshow("Image", frame[top:left, bottom:right])
             window.mainloop()
 
         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
