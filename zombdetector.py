@@ -8,6 +8,7 @@ import tkinter as tkin
 import threading
 import datetime
 import random
+from gfd.py.video.capture import VideoCaptureThreading
 
 
 from PIL import Image, ImageTk
@@ -151,7 +152,7 @@ while True:
     #Reads the current video capture, and sets it to RGB format
     ret, frame = video_capture.read()
 
-    rgb_small_frame = frame[:, :, ::-1] 
+    rgb_small_frame = cv2.resize(frame[:, :, ::-1], (0,0), fx=0.25, fy=0.25) 
     faces_found = []
 
     if process_currentframe >= 1: #The codes only run if the frame is set to be read on
