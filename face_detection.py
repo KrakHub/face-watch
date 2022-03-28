@@ -30,10 +30,6 @@ greetings = ***REMOVED***
     "evening": ["Good evening", "Hows your day going", "Nice to finally see you"],
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
 ***REMOVED***
-
-baseStudents = ["Antonio", "Alex", "Mr Sekol"]
-students = []
-
 process_currentframe = 0
 
 print("LOADING IMAGES")
@@ -105,40 +101,6 @@ def Greet(name):
     options = greetings[time]
     saying = options[random.randint(0,len(options)-1)]
     SayWords(saying + name)
-
-def takeAttendence():
-    def listToString(s): 
-        str1 = "" 
-
-        for ele in s: 
-            if len(str1) == 0:
-                str1 += ele  
-            else:
-                str1 += ", " + ele  
-            
-        
-        return str1 
-
-    SendMessage(listToString(students))
-
-import smtplib, ssl
-
-port = 587  # For starttls
-smtp_server = "smtp.gmail.com"
-sender_email = "culp_alexander@student.mahoningctc.com"
-receiver_email = "cotto_antonio@student.mahoningctc.com"
-password = "800D0FAa1"
-
-def SendMessage(message):
-    s = smtplib.SMTP('smtp.gmail.com', 587)
-    s.starttls()
-    s.login(sender_email, password)
-    SUBJECT = "Attendence"   
-    TEXT = message
-    message = 'Subject: ***REMOVED******REMOVED***\n\n***REMOVED******REMOVED***'.format(SUBJECT, TEXT)
-
-    s.sendmail(sender_email, receiver_email, message)
-    s.quit()
 
 def CompareFaces(tol):
     match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=tol)
@@ -218,14 +180,6 @@ while True:
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
     cv2.imshow('Video', frame) #Displays the video
-
-    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 24 and datetime.datetime.now().second == 0 or (cv2.waitKey(1) & 0xFF == ord('s')):
-        print('Starting Attendance')
-        students = baseStudents
-
-    if datetime.datetime.now().hour == 11 and datetime.datetime.now().minute == 25 and datetime.datetime.now().second == 0 or (cv2.waitKey(1) & 0xFF == ord('e')):
-        print('End Attendance')
-        takeAttendence()
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
