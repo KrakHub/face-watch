@@ -1,12 +1,11 @@
 import face_recognition
 import cv2
-import os
 import numpy as np
 import tkinter as tkin
 import threading
-import datetime
-import random
 from gaze_tracking import GazeTracking
+import pafy
+import vlc
 
 from PIL import Image, ImageTk
 
@@ -22,16 +21,14 @@ from firebase_admin import db
 gaze = GazeTracking()
 video_capture = cv2.VideoCapture(0)
 
+media = vlc.MediaPlayer(pafy.new("G-T3qKl6y-c"))
+media.play()
+
 Faces = [] #A constant, list of all of the face names
 known_faces = []
 face_locations = []
 face_names = [] #
 found_faces = []
-greetings = {
-    "morning": ["Good Morning", "How did you sleep", "Good to see you today"],
-    "evening": ["Good evening", "Hows your day going", "Nice to finally see you"],
-    "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
-}
 
 process_currentframe = 0
 
@@ -85,26 +82,6 @@ def EncodeFace(input, Encoding):
     SayWords("Welcome to the program, " + input + "!")
     window.destroy()
 
-def Greet(name):
-    current = datetime.datetime.now()
-
-    morning = current.replace(hour=11, minute=0, second=0, microsecond=0)
-    evening = current.replace(hour=16, minute=0, second=0, microsecond=0)
-    night = current.replace(hour=23, minute=0, second=0, microsecond=0)
-    
-    time = "morning"
-
-    if current < morning:
-        time = "morning"
-    elif current < evening:
-        time = "evening"
-    elif current < night:
-        time = "night"
-    
-    options = greetings[time]
-    saying = options[random.randint(0,len(options)-1)]
-    SayWords(saying + name) 
-
 def CompareFaces(tol):
     match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=tol)
     name = "Unknown"
@@ -113,18 +90,6 @@ def CompareFaces(tol):
     best_match_index = np.argmin(face_distances)
     if match[best_match_index]:
         name = Faces[best_match_index]
-        
-        foundInSession = False
-
-        for names in found_faces:
-            if names == name:
-                foundInSession = True
-                break
-        
-        if foundInSession == False:
-            found_faces.append(name)
-            Greet(name)
-
         ref = db.reference("/" + name)
         data = ref.get()
         getDiscriminator = str(len(data)+1)
