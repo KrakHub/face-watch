@@ -21,8 +21,11 @@ from firebase_admin import db
 gaze = GazeTracking()
 video_capture = cv2.VideoCapture(0)
 
-media = vlc.MediaPlayer(pafy.new("G-T3qKl6y-c"))
+url = "https://www.youtube.com/watch?v=G-T3qKl6y-c"            
+video = pafy.new(url)
+media = vlc.MediaPlayer(video.streams[0].url)
 media.play()
+print('Opened Video')
 
 Faces = [] #A constant, list of all of the face names
 known_faces = []
