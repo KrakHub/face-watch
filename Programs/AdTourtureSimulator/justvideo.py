@@ -1,10 +1,3 @@
-import pafy
-import vlc
-import time
+import youtube_dl as ydl
 
-url = "https://www.youtube.com/watch?v=G-T3qKl6y-c"            
-video = pafy.new(url)
-media = vlc.MediaPlayer(video.streams[0].url)
-media.play()
-print('Opened Video')
-time.sleep(2000)
+ydl.YoutubeDL({}).download(['https://www.youtube.com/watch?v=G-T3qKl6y-c'])

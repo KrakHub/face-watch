@@ -4,8 +4,6 @@ import numpy as np
 import tkinter as tkin
 import threading
 from gaze_tracking import GazeTracking
-import pafy
-import vlc
 
 from PIL import Image, ImageTk
 
@@ -21,11 +19,7 @@ from firebase_admin import db
 gaze = GazeTracking()
 video_capture = cv2.VideoCapture(0)
 
-url = "https://www.youtube.com/watch?v=G-T3qKl6y-c"            
-video = pafy.new(url)
-media = vlc.MediaPlayer(video.streams[0].url)
-media.play()
-print('Opened Video')
+
 
 Faces = [] #A constant, list of all of the face names
 known_faces = []
