@@ -159,23 +159,26 @@ while True:
     process_currentframe += 1
 
     for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, faces_found):
+        boxColor = (0,255,0)
         if name == "Unknown":
-            opened = True
-            window = tkin.Tk()
-            label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
-            label.pack()
-            unknown_image =  ImageTk.PhotoImage(image=Image.fromarray(rgb_small_frame[top:bottom, left:right]))
-            label2 = tkin.Canvas(window, width= 150, height=150)
-            label2.pack()
-            label2.create_image(20,20, anchor="nw", image=unknown_image)
-            nameEntry = tkin.Entry()
-            nameEntry.pack()
-            submitButton = tkin.Button(text="Submit", command=lambda:EncodeFace(nameEntry.get(), face_encodings))
-            submitButton.bind("SubmitButton", lambda event:EncodeFace(nameEntry.get(), face_encodings))
-            submitButton.pack()
-            window.mainloop()
+            boxColor = (0,0,255)
+            if cv2.waitKey(1) & 0xFF == ord('s'):
+                opened = True
+                window = tkin.Tk()
+                label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
+                label.pack()
+                unknown_image =  ImageTk.PhotoImage(image=Image.fromarray(rgb_small_frame[top:bottom, left:right]))
+                label2 = tkin.Canvas(window, width= 150, height=150)
+                label2.pack()
+                label2.create_image(20,20, anchor="nw", image=unknown_image)
+                nameEntry = tkin.Entry()
+                nameEntry.pack()
+                submitButton = tkin.Button(text="Submit", command=lambda:EncodeFace(nameEntry.get(), face_encodings))
+                submitButton.bind("SubmitButton", lambda event:EncodeFace(nameEntry.get(), face_encodings))
+                submitButton.pack()
+                window.mainloop()
 
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+        cv2.rectangle(frame, (left, top), (right, bottom), (boxColor), 2)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
