@@ -1,12 +1,5 @@
-import face_recognition
-import cv2
-import numpy as np
-import tkinter as tkin
-import threading
 from gaze_tracking import GazeTracking
-
-from PIL import Image, ImageTk
-
+import cv2
 import firebase_admin
 from firebase_admin import credentials
 from sqlalchemy import false
