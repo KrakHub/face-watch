@@ -1,6 +1,22 @@
-from flask import Flask, render_template, request, redirect, url_for
+from cgitb import text
+from threading import Lock
+from flask import Flask, render_template, request, redirect, url_for, session
+from flask_socketio import SocketIO, emit
 from eyetrackerForKivy import *
+import requests
+
+async_mode = None
+
 app = Flask(__name__)
+socketio = SocketIO(app)
+thread = None
+thread_lock = Lock()
+
+def listen():
+    while True:
+        socketio.sleep(2)
+        socketio.emit(runEyetrackerForReal())
+
 
 import firebase_admin
 from firebase_admin import credentials
@@ -68,8 +84,7 @@ def signup():
 
 @app.route('/<usr>')
 def user(usr):
-    global page
-    return render_template("user.html", user=usr, videos={"SpongeBob", "Squarepants"}, text=runEyetrackerForReal())
+    return render_template("user.html", user=usr, videos={"SpongeBob", "Squarepants"}, async_mode=socketio.async_mode)
 
 
 if __name__ == '__main__':

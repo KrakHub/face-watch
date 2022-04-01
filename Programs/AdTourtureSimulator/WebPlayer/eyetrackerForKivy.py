@@ -12,9 +12,6 @@ def runEyetracker():
     return 'Hello World!'
 
 
-
-
-
 def runEyetrackerForReal():
     process_currentframe = 0
     gaze = GazeTracking()
@@ -28,15 +25,15 @@ def runEyetrackerForReal():
             gaze.refresh(frame)
             frame = gaze.annotated_frame()
 
-            text = ""
+            facestatus = ""
             if gaze.is_right():
-                text = "Looking right"
+                facestatus = "Looking right"
             elif gaze.is_left():
-                text = "Looking left"
+                facestatus = "Looking left"
             elif gaze.is_center():
-                text = "Looking center"
+                facestatus = "Looking center"
             elif gaze.is_blinking():
-                text = "Blinking"
-            return text
+                facestatus = "Blinking"
+            return facestatus
 
         process_currentframe += 20
