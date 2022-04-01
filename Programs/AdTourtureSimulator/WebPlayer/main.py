@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for
+from eyetrackerForKivy import *
 app = Flask(__name__)
 
 import firebase_admin
 from firebase_admin import credentials
 
-cred = credentials.Certificate("Key.json")
+cred = credentials.Certificate("Programs/AdTourtureSimulator/WebPlayer/key2.json")
 firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://accounts-883b3-default-rtdb.firebaseio.com'})
 
 from firebase_admin import db
@@ -17,12 +18,12 @@ def home():
     page = "home"
     return render_template('home.html')
 
-@app.route('/login', methods=["POST", "GET"])
+@app.route('/login', methods=["GET", "POST"])
 def login():
     global page
-
+    print('Entered Login')
     if request.method == "POST" and page == "login":
-        user = request.form["nm"]
+        user = request.form["name"]
         Pass = request.form["pass"]
         
         ref = db.reference("/")
@@ -40,6 +41,7 @@ def login():
                 break
 
         if valid:
+            print('VALID!')
             return redirect(url_for("user", usr=user))
         else:
             return redirect(url_for("login", usr=user))
@@ -47,7 +49,7 @@ def login():
         page = "login"
         return render_template("login.html")
 
-@app.route('/signup', methods=["POST", "GET"])
+@app.route('/signup', methods=["GET", "POST"])
 def signup():
     global page
     print(page)
@@ -67,8 +69,7 @@ def signup():
 @app.route('/<usr>')
 def user(usr):
     global page
-    #page = "user"
-    return render_template("user.html", user=usr, videos={"SpongeBob", "Squarepants"})
+    return render_template("user.html", user=usr, videos={"SpongeBob", "Squarepants"}, text=runEyetrackerForReal())
 
 
 if __name__ == '__main__':
