@@ -1,11 +1,8 @@
 from xml.etree.ElementTree import tostring
 import face_recognition
-import cv2
 import os
 import numpy as np
 from sqlalchemy import table
-import dlib
-dlib.DLIB_USE_CUDA
 
 import firebase_admin
 from firebase_admin import credentials
@@ -25,7 +22,7 @@ ref = db.reference("/")
 ref.set("")
 
 for v in AllPics:
-    imageFile = face_recognition.load_image_file("Upload\\" + v)
+    imageFile = face_recognition.load_image_file("Upload/" + v)
     Encoding = face_recognition.face_encodings(imageFile)[0]
     # send data to firebase
     ref = db.reference("/" + v.rsplit('.', 1)[0])

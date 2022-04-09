@@ -7,6 +7,13 @@ import threading
 import datetime
 import random
 
+def InitiateLocalDir(inputpath):
+    if os.path.isdir(inputpath)!=True:
+        os.mkdir(inputpath)
+        print('Made path ' + str(inputpath) + ', since it does not exist')
+        return False
+    else: return True
+
 from PIL import Image, ImageTk
 
 import firebase_admin
@@ -41,7 +48,6 @@ def name_function():
     for name in data:
         ref = db.reference("/" + name)
         codes = ref.get()
-        
         for discriminator in codes:
             encoding = []
             print(discriminator)
