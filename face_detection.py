@@ -67,7 +67,6 @@ def SayWords(Text):
     def play():
         converter.setProperty('rate', 200)
         converter.setProperty('volume', 1)
-
         converter.say(Text)
         converter.runAndWait()
     
@@ -131,9 +130,10 @@ def CompareFaces(tol):
         ref = db.reference("/" + name)
         data = ref.get()
         getDiscriminator = str(len(data)+1)
-        if getDiscriminator <= str(8):
+        if (getDiscriminator <= str(8)) & (tol == 0.35):
             data["Encoding" + getDiscriminator] = face_encoding.tolist()
             ref.set(data)
+            print('Added additional encoding')
     return name
 
 print("IMAGES HAVE LOADED")
@@ -155,8 +155,8 @@ while True:
         face_names=[]
         for face_encoding in face_encodings:
             name = CompareFaces(0.35)
-            print(name)
             if name == "Unknown":
+                print('Face is unknown. Trying agian with a lesser sensitive algorithm...')
                 name = CompareFaces(0.55)
                 print(name)
             face_names.append(name) #face_names will be the names of the faces currently detected
@@ -186,7 +186,7 @@ while True:
 
         cv2.rectangle(frame, (left, top), (right, bottom), (boxColor), 2)
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (0, 255, 0), 1)
 
     cv2.imshow('Video', frame) #Displays the video
 
