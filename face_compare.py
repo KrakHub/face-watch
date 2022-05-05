@@ -3,19 +3,17 @@ import cv2
 import os
 import numpy as np
 import tkinter as tkin
-import threading
-import datetime
-import random
 
 imagefile = '/home/kraken/Pictures/unknown.png'
+image = cv2.imread(imagefile)
 imcap = face_recognition.load_image_file(imagefile)
 
-def InitiateLocalDir(inputpath):
-    if os.path.isdir(inputpath)!=True:
-        os.mkdir(inputpath)
-        print('Made path ' + str(inputpath) + ', since it does not exist')
-        return False
-    else: return True
+# def InitiateLocalDir(inputpath):
+#     if os.path.isdir(inputpath)!=True:
+#         os.mkdir(inputpath)
+#         print('Made path ' + str(inputpath) + ', since it does not exist')
+#         return False
+#     else: return True
 
 from PIL import Image, ImageTk
 
@@ -99,13 +97,16 @@ for face_encoding in face_encodings:
     faces_found.append(face_encoding)
 
 
-# for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, faces_found):
-#     boxColor = (0,255,0)
-#     if name == "Unknown":
-#         boxColor = (0,0,255)
+for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, faces_found):
+    boxColor = (0,255,0)
+    if name == "Unknown":
+        boxColor = (0,0,255)
 
-#     cv2.rectangle(imagefile, (left, top), (right, bottom), (boxColor), 2)
-#     font = cv2.FONT_HERSHEY_DUPLEX
-#     cv2.putText(imagefile, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+    cv2.rectangle(image, (left, top), (right, bottom), (boxColor), 2)
+    font = cv2.FONT_HERSHEY_DUPLEX
+    cv2.putText(image, name, (left + 6, bottom + 32), font, 1.0, (0, 255, 0), 1)
 
-# cv2.imshow('Image', imagefile) #Displays the video
+cv2.imshow('Image', image) #Displays the video
+cv2.waitKey(0)
+    
+cv2.destroyAllWindows()
