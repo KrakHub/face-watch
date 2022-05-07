@@ -44,21 +44,47 @@ print("LOADING IMAGES")
 ref = db.reference("/")
 data = ref.get() or []
 
-def name_function():
+#! def old_fb_pull():
+#!     for name in data:
+#!         ref = db.reference("/" + name)
+#!         codes = ref.get()
+#!         for discriminator in codes:
+#!             encoding = []
+#!             print(discriminator)
+#!             ref = db.reference("/" + name + "/" + str(discriminator))
+#!             code = ref.get()
+#!             localfile = open("Cache" + "/" + name + "/" + str(discriminator) + ".enc", "a")
+#!             for number in code:
+#!                 localfile.write(str(number) + "\n")
+#!                 encoding.append(number)
+#!             known_faces.append(np.array(encoding))
+#!             Faces.append(name)
+#!             localfile.close()
+
+def fb_savetocache():
     for name in data:
         ref = db.reference("/" + name)
         codes = ref.get()
+        InitiateLocalDir("Cache")
+        InitiateLocalDir("Cache" + "/" + name)
         for discriminator in codes:
             encoding = []
-            print(discriminator)
             ref = db.reference("/" + name + "/" + str(discriminator))
             code = ref.get()
+            localfile = open("Cache" + "/" + name + "/" + str(discriminator) + ".enc", "a")
             for number in code:
                 encoding.append(number)
-            known_faces.append(np.array(encoding))
+            localfile.write(' '.join(map(str, encoding)))
+            localfile.close()
+def fb_loadfromcache():
+    for name in os.listdir('Cache'):
+        print(name)
+        for file in os.listdir('Cache/' + name):
+            print(file)
+            localfile = open("Cache/" + name + "/" + file, "r").read()
+            known_faces.append(localfile)
             Faces.append(name)
-name_function()
-
+fb_loadfromcache()
 import pyttsx3
 
 converter = pyttsx3.init()
@@ -116,30 +142,32 @@ def CompareFaces(tol):
     if match[best_match_index]:
         name = Faces[best_match_index]
         
-        foundInSession = False
+        # foundInSession = False
 
-        for names in found_faces:
-            if names == name:
-                foundInSession = True
-                break
+        # for names in found_faces:
+        #     if names == name:
+        #         foundInSession = True
+        #         break
         
-        if foundInSession == False:
-            found_faces.append(name)
-            Greet(name)
+        # if foundInSession == False:
+        #     found_faces.append(name)
+        #     Greet(name)
 
-        ref = db.reference("/" + name)
-        data = ref.get()
-        getDiscriminator = str(len(data)+1)
-        if (getDiscriminator <= str(8)) & (tol == 0.35):
-            data["Encoding" + getDiscriminator] = face_encoding.tolist()
-            ref.set(data)
-            print('Added additional encoding')
+        # ref = db.reference("/" + name)
+        # data = ref.get()
+        # getDiscriminator = str(len(data)+1)
+        # if (getDiscriminator <= str(8)) & (tol == 0.35):
+        #     data["Encoding" + getDiscriminator] = face_encoding.tolist()
+        #     ref.set(data)
+        #     print('Added additional encoding')
     return name
 
 print("IMAGES HAVE LOADED")
 
 opened = False
-
+localfile = open("debug.txt", "a")
+localfile.write(str(known_faces))
+localfile.close()
 while True:
     #Reads the current video capture, and sets it to RGB format
     ret, frame = video_capture.read()
