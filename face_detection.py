@@ -74,7 +74,7 @@ def fb_savetocache():
             localfile = open("Cache" + "/" + name + "/" + str(discriminator) + ".enc", "a")
             for number in code:
                 encoding.append(number)
-            localfile.write(' '.join(map(str, encoding)))
+            localfile.write(str(encoding))
             localfile.close()
 def fb_loadfromcache():
     for name in os.listdir('Cache'):
@@ -85,6 +85,7 @@ def fb_loadfromcache():
             known_faces.append(localfile)
             Faces.append(name)
 fb_loadfromcache()
+known_faces = '[%s]' % ', '.join(map(str, known_faces))
 import pyttsx3
 
 converter = pyttsx3.init()
@@ -165,7 +166,7 @@ def CompareFaces(tol):
 print("IMAGES HAVE LOADED")
 
 opened = False
-localfile = open("debug.txt", "a")
+localfile = open("debug1.txt", "a")
 localfile.write(str(known_faces))
 localfile.close()
 while True:

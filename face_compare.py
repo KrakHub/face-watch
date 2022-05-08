@@ -47,7 +47,7 @@ def name_function():
             code = ref.get()
             for number in code:
                 encoding.append(number)
-            known_faces.append(np.array(encoding))
+            known_faces.append(encoding)
             Faces.append(name)
 name_function()
 
