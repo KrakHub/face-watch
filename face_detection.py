@@ -74,14 +74,18 @@ def fb_savetocache():
         InitiateLocalDir("Cache" + "/" + name)
         for discriminator in codes:
             ref = db.reference("/" + name + "/" + str(discriminator))
+            localref = "Cache" + "/" + name + "/" + str(discriminator) + ".enc"
             code = ref.get()
-            localfile = open("Cache" + "/" + name + "/" + str(discriminator) + ".enc", "a")
-            for number in code:
-                localfile.write(str(number) + '\n')
-            localfile.close()
+            if os.path.isfile(localref) != True:
+                localfile = open(localref, "a")
+                for number in code:
+                    localfile.write(str(number) + '\n')
+                localfile.close()
+            else:
+                print('Skipped file ' + localref)
 
 
-
+fb_savetocache()
 
 
 def fb_loadfromcache():
@@ -91,7 +95,6 @@ def fb_loadfromcache():
             encoding = []
             localfile = open("Cache/" + name + "/" + file, "r").readlines()
             for line in localfile:
-                print(float(line))
                 encoding.append(float(line))
             known_faces.append(encoding)
             Faces.append(name)
@@ -158,24 +161,24 @@ def CompareFaces(tol):
     if match[best_match_index]:
         name = Faces[best_match_index]
 
-        # foundInSession = False
+        foundInSession = False
 
-        # for names in found_faces:
-        #     if names == name:
-        #         foundInSession = True
-        #         break
+        for names in found_faces:
+            if names == name:
+                foundInSession = True
+                break
 
-        # if foundInSession == False:
-        #     found_faces.append(name)
-        #     Greet(name)
+        if foundInSession == False:
+            found_faces.append(name)
+            Greet(name)
 
-        # ref = db.reference("/" + name)
-        # data = ref.get()
-        # getDiscriminator = str(len(data)+1)
-        # if (getDiscriminator <= str(8)) & (tol == 0.35):
-        #     data["Encoding" + getDiscriminator] = face_encoding.tolist()
-        #     ref.set(data)
-        #     print('Added additional encoding')
+        ref = db.reference("/" + name)
+        data = ref.get()
+        getDiscriminator = str(len(data)+1)
+        if (getDiscriminator <= str(8)) & (tol == 0.35):
+            data["Encoding" + getDiscriminator] = face_encoding.tolist()
+            ref.set(data)
+            print('Added additional encoding')
     return name
 
 
