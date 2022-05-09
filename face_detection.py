@@ -6,6 +6,7 @@ import tkinter as tkin
 import threading
 import datetime
 import random
+import json
 
 def InitiateLocalDir(inputpath):
     if os.path.isdir(inputpath)!=True:
@@ -68,24 +69,29 @@ def fb_savetocache():
         InitiateLocalDir("Cache")
         InitiateLocalDir("Cache" + "/" + name)
         for discriminator in codes:
-            encoding = []
             ref = db.reference("/" + name + "/" + str(discriminator))
             code = ref.get()
             localfile = open("Cache" + "/" + name + "/" + str(discriminator) + ".enc", "a")
             for number in code:
-                encoding.append(number)
-            localfile.write(str(encoding))
+                localfile.write(str(number) + '\n')
             localfile.close()
+
 def fb_loadfromcache():
     for name in os.listdir('Cache'):
         print(name)
         for file in os.listdir('Cache/' + name):
-            print(file)
-            localfile = open("Cache/" + name + "/" + file, "r").read()
-            known_faces.append(localfile)
+            encoding = []
+            localfile = open("Cache/" + name + "/" + file, "r").readlines()
+            for line in localfile:
+                print(line)
+                encoding.append(line)
+            known_faces.append(encoding)
             Faces.append(name)
+
 fb_loadfromcache()
-known_faces = '[%s]' % ', '.join(map(str, known_faces))
+#known_faces = known_faces[0]
+#testlist = ["a", 'b', 'c']
+#print(testlist[0])
 import pyttsx3
 
 converter = pyttsx3.init()
