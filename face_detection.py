@@ -1,3 +1,9 @@
+from PIL import Image, ImageTk
+import pyttsx3
+from firebase_admin import db
+from sqlalchemy import false
+from firebase_admin import credentials
+import firebase_admin
 import face_recognition
 import cv2
 import os
@@ -8,30 +14,27 @@ import datetime
 import random
 import json
 
+
 def InitiateLocalDir(inputpath):
-    if os.path.isdir(inputpath)!=True:
+    if os.path.isdir(inputpath) != True:
         os.mkdir(inputpath)
         print('Made path ' + str(inputpath) + ', since it does not exist')
         return False
-    else: return True
+    else:
+        return True
 
-from PIL import Image, ImageTk
-
-import firebase_admin
-from firebase_admin import credentials
-from sqlalchemy import false
 
 cred = credentials.Certificate("Key.json")
-firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
+firebaseadmin = firebase_admin.initialize_app(
+    cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
-from firebase_admin import db
 
 video_capture = cv2.VideoCapture(0)
 
-Faces = [] #A constant, list of all of the face names
+Faces = []  # A constant, list of all of the face names
 known_faces = []
 face_locations = []
-face_names = [] #
+face_names = []
 found_faces = []
 greetings = {
     "morning": ["Good Morning", "How did you sleep", "Good to see you today"],
@@ -62,6 +65,7 @@ data = ref.get() or []
 #!             Faces.append(name)
 #!             localfile.close()
 
+
 def fb_savetocache():
     for name in data:
         ref = db.reference("/" + name)
@@ -76,6 +80,10 @@ def fb_savetocache():
                 localfile.write(str(number) + '\n')
             localfile.close()
 
+
+
+
+
 def fb_loadfromcache():
     for name in os.listdir('Cache'):
         print(name)
@@ -83,18 +91,17 @@ def fb_loadfromcache():
             encoding = []
             localfile = open("Cache/" + name + "/" + file, "r").readlines()
             for line in localfile:
-                print(line)
-                encoding.append(line)
+                print(float(line))
+                encoding.append(float(line))
             known_faces.append(encoding)
             Faces.append(name)
 
+
 fb_loadfromcache()
-#known_faces = known_faces[0]
-#testlist = ["a", 'b', 'c']
-#print(testlist[0])
-import pyttsx3
+
 
 converter = pyttsx3.init()
+
 
 def SayWords(Text):
     def play():
@@ -102,7 +109,7 @@ def SayWords(Text):
         converter.setProperty('volume', 1)
         converter.say(Text)
         converter.runAndWait()
-    
+
     x = threading.Thread(target=play)
     x.start()
 
@@ -120,13 +127,14 @@ def EncodeFace(input, Encoding):
     SayWords("Welcome to the program, " + input + "!")
     window.destroy()
 
+
 def Greet(name):
     current = datetime.datetime.now()
 
     morning = current.replace(hour=11, minute=0, second=0, microsecond=0)
     evening = current.replace(hour=16, minute=0, second=0, microsecond=0)
     night = current.replace(hour=23, minute=0, second=0, microsecond=0)
-    
+
     time = "morning"
 
     if current < morning:
@@ -135,10 +143,11 @@ def Greet(name):
         time = "evening"
     elif current < night:
         time = "night"
-    
+
     options = greetings[time]
-    saying = options[random.randint(0,len(options)-1)]
+    saying = options[random.randint(0, len(options)-1)]
     SayWords(saying + name)
+
 
 def CompareFaces(tol):
     match = face_recognition.api.compare_faces(known_faces, face_encoding, tolerance=tol)
@@ -148,14 +157,14 @@ def CompareFaces(tol):
     best_match_index = np.argmin(face_distances)
     if match[best_match_index]:
         name = Faces[best_match_index]
-        
+
         # foundInSession = False
 
         # for names in found_faces:
         #     if names == name:
         #         foundInSession = True
         #         break
-        
+
         # if foundInSession == False:
         #     found_faces.append(name)
         #     Greet(name)
@@ -169,6 +178,7 @@ def CompareFaces(tol):
         #     print('Added additional encoding')
     return name
 
+
 print("IMAGES HAVE LOADED")
 
 opened = False
@@ -176,54 +186,56 @@ localfile = open("debug1.txt", "a")
 localfile.write(str(known_faces))
 localfile.close()
 while True:
-    #Reads the current video capture, and sets it to RGB format
+    # Reads the current video capture, and sets it to RGB format
     ret, frame = video_capture.read()
 
-    rgb_small_frame = frame[:, :, ::-1] 
+    rgb_small_frame = frame[:, :, ::-1]
     faces_found = []
 
-    if process_currentframe >= 1: #The codes only run if the frame is set to be read on
+    if process_currentframe >= 1:  # The codes only run if the frame is set to be read on
         process_currentframe = 0
-        face_locations = face_recognition.api.face_locations(rgb_small_frame) 
+        face_locations = face_recognition.api.face_locations(rgb_small_frame)
         face_encodings = face_recognition.api.face_encodings(rgb_small_frame, face_locations)
 
-        face_names=[]
+        face_names = []
         for face_encoding in face_encodings:
             name = CompareFaces(0.35)
             if name == "Unknown":
                 print('Face is unknown. Trying agian with a lesser sensitive algorithm...')
                 name = CompareFaces(0.55)
                 print(name)
-            face_names.append(name) #face_names will be the names of the faces currently detected
+            # face_names will be the names of the faces currently detected
+            face_names.append(name)
             faces_found.append(face_encoding)
 
     process_currentframe += 1
 
     for (top, right, bottom, left), name, face_encodings in zip(face_locations, face_names, faces_found):
-        boxColor = (0,255,0)
+        boxColor = (0, 255, 0)
         if name == "Unknown":
-            boxColor = (0,0,255)
+            boxColor = (0, 0, 255)
             if cv2.waitKey(1) & 0xFF == ord('s'):
                 opened = True
                 window = tkin.Tk()
                 label = tkin.Label(text="Unknown face detected. Please enter a name you want to save this face as.")
                 label.pack()
-                unknown_image =  ImageTk.PhotoImage(image=Image.fromarray(rgb_small_frame[top:bottom, left:right]))
-                label2 = tkin.Canvas(window, width= 150, height=150)
+                unknown_image = ImageTk.PhotoImage(image=Image.fromarray(rgb_small_frame[top:bottom, left:right]))
+                label2 = tkin.Canvas(window, width=150, height=150)
                 label2.pack()
-                label2.create_image(20,20, anchor="nw", image=unknown_image)
+                label2.create_image(20, 20, anchor="nw", image=unknown_image)
                 nameEntry = tkin.Entry()
                 nameEntry.pack()
-                submitButton = tkin.Button(text="Submit", command=lambda:EncodeFace(nameEntry.get(), face_encodings))
-                submitButton.bind("SubmitButton", lambda event:EncodeFace(nameEntry.get(), face_encodings))
+                submitButton = tkin.Button(text="Submit", command=lambda: EncodeFace(nameEntry.get(), face_encodings))
+                submitButton.bind("SubmitButton", lambda event: EncodeFace(nameEntry.get(), face_encodings))
                 submitButton.pack()
                 window.mainloop()
 
         cv2.rectangle(frame, (left, top), (right, bottom), (boxColor), 2)
         font = cv2.FONT_HERSHEY_DUPLEX
-        cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (0, 255, 0), 1)
+        cv2.putText(frame, name, (left + 6, bottom - 6),
+                    font, 1.0, (0, 255, 0), 1)
 
-    cv2.imshow('Video', frame) #Displays the video
+    cv2.imshow('Video', frame)  # Displays the video
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
