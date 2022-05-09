@@ -47,10 +47,9 @@ def name_function():
             code = ref.get()
             for number in code:
                 encoding.append(number)
-            known_faces.append(np.array(encoding))
+            known_faces.append(encoding)
             Faces.append(name)
 name_function()
-
 
 def EncodeFace(input, Encoding):
     # send data to firebase
@@ -79,7 +78,9 @@ def CompareFaces(tol):
     return name
 
 print("IMAGES HAVE LOADED")
-
+localfile = open("debug2.txt", "a")
+localfile.write(str(known_faces))
+localfile.close()
 #Reads the current video capture, and sets it to RGB format
 faces_found = []
 
