@@ -4,7 +4,6 @@ from firebase_admin import db
 from sqlalchemy import false
 from firebase_admin import credentials
 import firebase_admin
-import face_recognition
 import cv2
 import os
 import numpy as np
@@ -12,7 +11,7 @@ import tkinter as tkin
 import threading
 import datetime
 import random
-import json
+import face_recognition
 
 
 def InitiateLocalDir(inputpath):
@@ -24,7 +23,18 @@ def InitiateLocalDir(inputpath):
         return True
 
 
-cred = credentials.Certificate("Key.json")
+cred = credentials.Certificate(***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***
+***REMOVED***)
 firebaseadmin = firebase_admin.initialize_app(
     cred, ***REMOVED***'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'***REMOVED***)
 
