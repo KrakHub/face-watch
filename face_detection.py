@@ -23,20 +23,20 @@ def InitiateLocalDir(inputpath):
         return True
 
 
-cred = credentials.Certificate(***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***
-***REMOVED***)
+cred = credentials.Certificate({
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+  ***REMOVED***
+})
 firebaseadmin = firebase_admin.initialize_app(
-    cred, ***REMOVED***'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'***REMOVED***)
+    cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
 
 video_capture = cv2.VideoCapture(0)
@@ -46,11 +46,11 @@ known_faces = []
 face_locations = []
 face_names = []
 found_faces = []
-greetings = ***REMOVED***
+greetings = {
     "morning": ["Good Morning", "How did you sleep", "Good to see you today"],
     "evening": ["Good evening", "Hows your day going", "Nice to finally see you"],
     "night": ["Its getting late", "Goodnight", "Its dark, what are you doing here"]
-***REMOVED***
+}
 process_currentframe = 0
 
 print("LOADING IMAGES")
@@ -133,7 +133,7 @@ def EncodeFace(input, Encoding):
         return
     ref = db.reference("/" + input + "/")
     print(input)
-    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+    ref.set({"Encoding": Encoding.tolist()})
 
     known_faces.append(Encoding)
     Faces.append(input)

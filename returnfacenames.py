@@ -21,7 +21,7 @@ from firebase_admin import credentials
 from sqlalchemy import false
 
 cred = credentials.Certificate("Key.json")
-firebaseadmin = firebase_admin.initialize_app(cred, ***REMOVED***'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'***REMOVED***)
+firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
 from firebase_admin import db
 
@@ -59,7 +59,7 @@ def EncodeFace(input, Encoding):
         return
     ref = db.reference("/" + input + "/")
     print(input)
-    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+    ref.set({"Encoding": Encoding.tolist()})
 
     known_faces.append(Encoding)
     Faces.append(input)

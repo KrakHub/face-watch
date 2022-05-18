@@ -8,7 +8,7 @@ import firebase_admin
 from firebase_admin import credentials
 
 cred = credentials.Certificate("Key.json")
-firebaseadmin = firebase_admin.initialize_app(cred, ***REMOVED***'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'***REMOVED***)
+firebaseadmin = firebase_admin.initialize_app(cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
 from firebase_admin import db
 
@@ -26,6 +26,6 @@ for v in AllPics:
     Encoding = face_recognition.face_encodings(imageFile)[0]
     # send data to firebase
     ref = db.reference("/" + v.rsplit('.', 1)[0])
-    ref.set(***REMOVED***"Encoding": Encoding.tolist()***REMOVED***)
+    ref.set({"Encoding": Encoding.tolist()})
     
 print("Done")
