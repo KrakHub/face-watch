@@ -6,3 +6,4 @@ dist/*
 bfg-1.13.0.jar
 Key.json
 key.txt
+face_recognition_models\__pycache__\*
