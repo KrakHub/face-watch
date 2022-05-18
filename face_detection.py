@@ -23,18 +23,7 @@ def InitiateLocalDir(inputpath):
         return True
 
 
-cred = credentials.Certificate({
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-  ***REMOVED***
-})
+cred = credentials.Certificate('Key.json')
 firebaseadmin = firebase_admin.initialize_app(
     cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
