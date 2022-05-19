@@ -23,7 +23,10 @@ def InitiateLocalDir(inputpath):
         return True
 
 
-cred = credentials.Certificate('Key.json')
+try:
+    cred = credentials.Certificate('Key.json')
+except:
+    print('Please ensure a \'Key.json\' to a Firebase is placed in the same directory as this executable.')
 firebaseadmin = firebase_admin.initialize_app(
     cred, {'databaseURL': 'https://faces-c07d3-default-rtdb.firebaseio.com'})
 
